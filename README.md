@@ -11,8 +11,10 @@
 - 前端就四个文件：`index.html` / `style.css` / `app.js` / `config.js`，任意静态托管都能跑。
 - `config.js` 里的 `window.API_BASE` 填你的接口地址；留空则按同源处理（前后端同一个端口）。
 - 后端需要提供 `GET /api/ping`、`POST /api/enroll`（字段见 `app.js` 的 `submitForm`），
-  返回 `{ok,id,xh,hits,new}`。
+  返回 `{ok,id,xh,hits,new}`；管理员用 `POST /api/done`（`{xh, done}`）把一条标记完成或撤销，
+  `GET /api/queue` 返回的每条带 `done` / `done_at`，前端据此分「待处理 / 已完成」两区。
 - 管理员视图（名单等）在网址后加 `?key=…` 开启，key 由服务端校验，前端不存副本。
+- 改了 `app.js` / `style.css` 记得把 `index.html` 里的 `?v=` 加一，否则静态站会按缓存继续发旧文件。
 
 ## 说明
 
