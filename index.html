@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>大学计算机实践 · 学号登记</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header>
+  <h1>大学计算机实践 · 学号登记</h1>
+  <p id="net" class="hint">正在连接本地服务……</p>
+</header>
+
+<main>
+  <section class="card">
+    <h2>提交学号</h2>
+    <form id="f" autocomplete="off">
+      <label>学号 <span class="req">*</span>
+        <input id="xh" inputmode="numeric" pattern="\d{10,14}" maxlength="14"
+               placeholder="12 位学号" required>
+      </label>
+      <label>姓名
+        <input id="xm" maxlength="20" placeholder="选填">
+      </label>
+      <label>哪次作业
+        <input id="homework" maxlength="40" placeholder="如：作业6 / 上机2第3题">
+      </label>
+      <label>备注
+        <textarea id="note" maxlength="200" rows="3"
+                  placeholder="如：只有第 3 题没做、需要网址"></textarea>
+      </label>
+      <div class="row">
+        <button id="btn" type="submit">登记</button>
+        <span id="msg" class="msg"></span>
+      </div>
+    </form>
+    <p class="hint">同一学号重复提交只更新一条，不新增记录。<br>
+      管理员看名单与覆盖表：网址后加 <code>?key=…</code>（key 在服务端 <code>web/admin.key</code>）。</p>
+  </section>
+
+  <section class="card" id="covcard">
+    <h2>题库覆盖 <span id="covmeta" class="tag"></span></h2>
+    <div class="filters">
+      <input id="q" placeholder="筛题号 / 题名，如 bz012">
+      <select id="fam"><option value="">全部系</option></select>
+      <select id="state">
+        <option value="">全部状态</option>
+        <option value="verified">投放即满分（客户端实测）</option>
+        <option value="local_only">本地判分全过</option>
+        <option value="has_answer">有成品·口径未标</option>
+        <option value="params_ready">有评分点+实参</option>
+        <option value="spec_only">只有派发·需抓包</option>
+      </select>
+      <span id="cown" class="tag"></span>
+    </div>
+    <div class="scroll">
+      <table id="cov">
+        <thead>
+          <tr><th>题号</th><th>题名 / 成品</th><th>评分点</th><th>分值</th><th>状态</th></tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+    <p class="hint">「分值」= 该题 jbfz 合计（fz_rate=1 时即满分）；只有抓过包的题才有分值。<br>
+      状态：<b>实测满分</b> 已用客户端提交拿到过满分，投放即得分 ·
+      <b>本地判过</b> 成品过了本地真判分，未交过服务端 ·
+      <b>可构造</b> 评分点与实参都在参数库里，无成品 ·
+      <b>需抓包</b> 只有跳表派发，实参要抓一次 <code>client_get_task_info</code>。</p>
+  </section>
+
+  <section class="card" id="queuecard">
+    <h2>已登记 <span id="qcount" class="tag"></span></h2>
+    <div class="scroll">
+      <table id="queue">
+        <thead>
+          <tr><th>学号</th><th>姓名</th><th>作业</th><th>备注</th><th>提交次数</th><th>更新</th></tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+    <p class="hint" id="qhint">名单默认不对外可见（服务加 <code>--show-queue</code> 才返回）。</p>
+    <div class="row">
+      <button id="refresh" type="button">刷新</button>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <p>数据落在 <code>web/enroll.db</code>（SQLite）。全量导出：<code>/api/export</code></p>
+</footer>
+<script src="config.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
