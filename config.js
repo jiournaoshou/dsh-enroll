@@ -1,4 +1,5 @@
 // 后端地址。留空 = 同源（前后端同一个端口时用）。
-// 前端单独托管（如 GitHub Pages）时，填后端服务的 https 地址，例如
-// window.API_BASE = "https://example.com";
-window.API_BASE = "";
+// 这里填隧道地址：Pages 只发静态页，写库的那台机器通过 cloudflared 暴露。
+// 隧道重启后这个域名会变，变了一条命令换回来：
+//   py -3.12 web/tunnel.py set https://新的.trycloudflare.com
+window.API_BASE = "https://ann-drain-mason-measurement.trycloudflare.com";
