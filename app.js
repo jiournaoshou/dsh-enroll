@@ -148,26 +148,60 @@ function paintCov() {
   document.getElementById("cown").textContent = n + " / " + COV.length + " 题";
 }
 
-function renderQueue(data) {
-  var tb = document.querySelector("#queue tbody");
+function markDone(xh, done, btn) {
+  btn.disabled = true;
+  document.getElementById("qhint").textContent = done ? "标记完成中…" : "撤销中…";
+  api("/api/done", {
+    method: "POST",
+    headers: { "Content-Type": "application/json;charset=utf-8" },
+    body: JSON.stringify({ xh: xh, done: done })
+  }).then(loadQueue, function (e) {
+    btn.disabled = false;
+    document.getElementById("qhint").textContent = "操作失败：" + e.message;
+  });
+}
+
+function queueRows(tb, items, done) {
   tb.textContent = "";
-  if (data.hidden) {
-    document.getElementById("qcount").textContent = "";
-    document.getElementById("qhint").textContent = "名单只对管理员开放（网址后加 ?key=…）。";
-    return;
-  }
-  document.getElementById("qhint").textContent = "共 " + data.items.length + " 条（最多显示 500）";
-  document.getElementById("qcount").textContent = data.items.length + " 人";
-  data.items.forEach(function (r) {
+  items.forEach(function (r) {
     var tr = el("tr");
     tr.appendChild(el("td", "mono", r.xh));
     tr.appendChild(el("td", "", r.xm || "—"));
     tr.appendChild(el("td", "", r.homework || "—"));
-    tr.appendChild(el("td", "note", r.note || "—"));
-    tr.appendChild(el("td", "num", r.hits));
-    tr.appendChild(el("td", "mono", r.updated_at));
+    if (done) {
+      tr.appendChild(el("td", "mono", r.done_at || "—"));
+    } else {
+      tr.appendChild(el("td", "note", r.note || "—"));
+      tr.appendChild(el("td", "num", r.hits));
+      tr.appendChild(el("td", "mono", r.updated_at));
+    }
+    var b = el("button", "mini" + (done ? " ghost" : ""), done ? "撤销" : "完成");
+    b.type = "button";
+    b.addEventListener("click", function () { markDone(r.xh, !done, b); });
+    var td = el("td");
+    td.appendChild(b);
+    tr.appendChild(td);
     tb.appendChild(tr);
   });
+}
+
+function renderQueue(data) {
+  if (data.hidden) {
+    queueRows(document.querySelector("#queue tbody"), [], false);
+    queueRows(document.querySelector("#qdone tbody"), [], true);
+    document.getElementById("qcount").textContent = "";
+    document.getElementById("dcount").textContent = "";
+    document.getElementById("qhint").textContent = "名单只对管理员开放（网址后加 ?key=…）。";
+    return;
+  }
+  var items = data.items || [];
+  var todo = items.filter(function (r) { return !r.done; });
+  var fin = items.filter(function (r) { return !!r.done; });
+  queueRows(document.querySelector("#queue tbody"), todo, false);
+  queueRows(document.querySelector("#qdone tbody"), fin, true);
+  document.getElementById("qcount").textContent = todo.length + " 人";
+  document.getElementById("dcount").textContent = fin.length + " 人";
+  document.getElementById("qhint").textContent = "共 " + items.length + " 条（最多显示 500）";
 }
 
 function loadCoverage() {
@@ -192,6 +226,7 @@ function offline(reason) {
       : detail);
   hide("covcard");
   hide("queuecard");
+  hide("donecard");
 }
 
 function boot() {
@@ -211,7 +246,7 @@ function boot() {
     net(ADMIN ? "服务在线，管理员视图。"
               : "服务在线，可提交。名单与题库覆盖需 ?key= 才显示。");
     if (ADMIN) { loadCoverage(); loadQueue(); }
-    else { hide("covcard"); hide("queuecard"); }
+    else { hide("covcard"); hide("queuecard"); hide("donecard"); }
   }, function (e) {
     offline(e.message);
   });

@@ -43,6 +43,12 @@ button {
 }
 button:disabled { opacity: .55; cursor: wait; }
 button:hover:not(:disabled) { filter: brightness(1.12); }
+button.mini {
+  padding: 2px 12px; font-size: 12px; border-radius: 999px;
+  background: transparent; border: 1px solid var(--green); color: var(--green);
+}
+button.mini.ghost { border-color: var(--line); color: var(--dim); }
+#queuecard, #donecard { grid-column: 1 / -1; }
 .row { display: flex; align-items: center; gap: 12px; }
 .msg { font-size: 13px; color: var(--dim); }
 .msg.ok { color: var(--green); }

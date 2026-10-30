@@ -70,19 +70,32 @@
   </section>
 
   <section class="card" id="queuecard">
-    <h2>已登记 <span id="qcount" class="tag"></span></h2>
+    <h2>待处理 <span id="qcount" class="tag"></span></h2>
     <div class="scroll">
       <table id="queue">
         <thead>
-          <tr><th>学号</th><th>姓名</th><th>作业</th><th>备注</th><th>提交次数</th><th>更新</th></tr>
+          <tr><th>学号</th><th>姓名</th><th>作业</th><th>备注</th><th>提交次数</th><th>更新</th><th>操作</th></tr>
         </thead>
         <tbody></tbody>
       </table>
     </div>
-    <p class="hint" id="qhint">名单默认不对外可见（服务加 <code>--show-queue</code> 才返回）。</p>
+    <p class="hint" id="qhint">名单只对管理员开放（网址后加 <code>?key=…</code>）。</p>
     <div class="row">
       <button id="refresh" type="button">刷新</button>
     </div>
+  </section>
+
+  <section class="card" id="donecard">
+    <h2>已完成 <span id="dcount" class="tag"></span></h2>
+    <div class="scroll">
+      <table id="qdone">
+        <thead>
+          <tr><th>学号</th><th>姓名</th><th>作业</th><th>完成时间</th><th>操作</th></tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+    <p class="hint">点「撤销」把这条放回待处理。</p>
   </section>
 </main>
 
